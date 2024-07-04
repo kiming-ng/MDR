@@ -1,0 +1,72 @@
+# configuration groups
+defaults:
+  - encoder: hf_bert
+  - train: biencoder_uprise
+  - datasets: encoder_train_default
+
+train_datasets: [uprise_dataset]
+dev_datasets: [uprise_valid_dataset]
+output_dir: ./experiments/train_retriever
+train_sampling_rates:
+loss_scale_factors:
+
+# Whether to lower case the input text. Set True for uncased models, False for the cased ones.
+do_lower_case: True
+
+fix_ctx_encoder: False
+val_av_rank_start_epoch: 0 
+seed: 12345
+checkpoint_file_name: dpr_biencoder
+
+# A trained bi-encoder checkpoint file to initialize the model
+model_file: path_to_retriever_chpt
+
+# TODO: move to a conf group
+# local_rank for distributed training on gpus
+local_rank: -1
+global_loss_buf_sz: 592000
+device:
+distributed_world_size:
+distributed_port:
+no_cuda: False
+n_gpu:
+fp16: False
+
+# For fp16: Apex AMP optimization level selected in ['O0', 'O1', 'O2', and 'O3']."
+#        "See details at https://nvidia.github.io/apex/amp.html
+fp16_opt_level: O1
+
+# tokens which won't be split by tokenizer
+special_tokens:
+
+ignore_checkpoint_offset: False
+ignore_checkpoint_optimizer: False
+
+# set to >1 to enable multiple query encoders
+multi_q_encoder: False
+
+method: ours
+eigen_type: max
+
+datasets:
+  train_clusters: nli
+  train_file: ./experiments/train_retriever
+  valid_file: ./experiments/train_retriever
+  hard_neg: true
+  multi_task: True
+  top_k: 3
+  prompt_pool_path: ./experiments/train_retriever/prompt_pool
+  prompt_setup_type: qa
+  task_setup_type: q
+
+train:
+  hard_negatives: 3
+  num_train_epochs: 5
+  batch_size: 8
+
+encoder:
+  cache_dir: ./cache
+
+hydra:
+  run:
+    dir: ./experiments/train_retriever/logs
